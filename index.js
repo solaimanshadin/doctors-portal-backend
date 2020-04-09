@@ -63,9 +63,10 @@ app.post('/makeBooking' , (req,res) => {
 
 })
 
-app.post('/changeBookingStatus', (req, res) => {
+// Updating Booking Status
+app.post('/updateBookingStatus', (req, res) => {
     const ap = req.body;
-    console.log(status);
+    console.log(ap);
     client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
 
     client.connect(err => {
@@ -89,6 +90,32 @@ app.post('/changeBookingStatus', (req, res) => {
     });
 })
 
+// Updating Booking Status
+app.post('/updatePrescription', (req, res) => {
+    const ap = req.body;
+    console.log(ap);
+    client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
+
+    client.connect(err => {
+        const collection = client.db('doctorsPortal').collection('bookedAppointments');
+        collection.updateOne(
+            { _id:ObjectId(ap.id) }, 
+            {
+            $set: {  "prescription" : ap.prescription },
+            },
+          (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: err })
+            }
+            else {
+                res.send(result);
+                console.log(result);
+            }
+            client.close();
+        })
+    });
+})
 
 
 // Dummy Route to insert Appointment Data at once
