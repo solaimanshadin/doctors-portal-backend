@@ -63,7 +63,36 @@ app.post('/makeBooking' , (req,res) => {
 
 })
 
+app.post('/changeBookingStatus', (req, res) => {
+    const ap = req.body;
+    console.log(status);
+    client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
+
+    client.connect(err => {
+        const collection = client.db('doctorsPortal').collection('bookedAppointments');
+        collection.updateOne(
+            { _id:ObjectId(ap.id) }, 
+            {
+            $set: {  "status" : ap.status },
+            },
+          (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: err })
+            }
+            else {
+                res.send(result);
+                console.log(result);
+            }
+            client.close();
+        })
+    });
+})
+
+
+
 // Dummy Route to insert Appointment Data at once
+/** 
 app.post('/insertAppointment' , (req,res) => {
     const data = req.body;
     console.log(data);
@@ -79,6 +108,8 @@ app.post('/insertAppointment' , (req,res) => {
 
     })
 })
+*/
+
 
 const port = process.env.PORT || 3200;
 app.listen(port, err => err ? console.log("Filed to Listen on Port" , port) : console.log("Listing for Port" , port));
