@@ -149,6 +149,37 @@ app.post('/updateVisitingStatus', (req, res) => {
 })
 
 
+
+// Updating Appointment Date/Time
+
+app.post('/updateAppointmentTime', (req, res) => {
+    const ap = req.body;
+    client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
+
+    client.connect(err => {
+        const collection = client.db('doctorsPortal').collection('bookedAppointments');
+        collection.updateOne(
+            { _id:ObjectId(ap.id) }, 
+            {
+            $set: {  "date" : ap.date },
+            $set: {  "time" : ap.time },
+            $currentDate: { "lastModified": true }
+            },
+          (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: err })
+            }
+            else {
+                res.send(result);
+                console.log(result);
+            }
+            client.close();
+        })
+    });
+})
+
+
 // Dummy Route to insert Appointment Data at once
 /** 
 app.post('/insertAppointment' , (req,res) => {
