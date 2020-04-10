@@ -2,6 +2,7 @@ const express = require('express');
 const cors = require('cors');
 const BodyParser = require('body-parser');
 const MongoClient = require('mongodb').MongoClient;
+const ObjectId =  require('mongodb').ObjectId
 require('dotenv').config();
 
 const app = express();
@@ -75,6 +76,7 @@ app.post('/updateBookingStatus', (req, res) => {
             { _id:ObjectId(ap.id) }, 
             {
             $set: {  "status" : ap.status },
+            $currentDate: { "lastModified": true }
             },
           (err, result) => {
             if (err) {
@@ -90,7 +92,7 @@ app.post('/updateBookingStatus', (req, res) => {
     });
 })
 
-// Updating Booking Status
+// Updating Prescription
 app.post('/updatePrescription', (req, res) => {
     const ap = req.body;
     console.log(ap);
@@ -102,6 +104,35 @@ app.post('/updatePrescription', (req, res) => {
             { _id:ObjectId(ap.id) }, 
             {
             $set: {  "prescription" : ap.prescription },
+            $currentDate: { "lastModified": true }
+            },
+          (err, result) => {
+            if (err) {
+                console.log(err);
+                res.status(500).send({ message: err })
+            }
+            else {
+                res.send(result);
+                console.log(result);
+            }
+            client.close();
+        })
+    });
+})
+
+
+// Updating Appointment Visiting Status
+app.post('/updateVisitingStatus', (req, res) => {
+    const ap = req.body;
+    client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
+
+    client.connect(err => {
+        const collection = client.db('doctorsPortal').collection('bookedAppointments');
+        collection.updateOne(
+            { _id:ObjectId(ap.id) }, 
+            {
+            $set: {  "visitingStatus" : ap.visitingStatus },
+            $currentDate: { "lastModified": true }
             },
           (err, result) => {
             if (err) {
