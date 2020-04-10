@@ -154,6 +154,7 @@ app.post('/updateVisitingStatus', (req, res) => {
 
 app.post('/updateAppointmentTime', (req, res) => {
     const ap = req.body;
+    console.log(ap);
     client = new MongoClient(uri, {useNewUrlParser : true,  useUnifiedTopology: true });
 
     client.connect(err => {
@@ -161,7 +162,7 @@ app.post('/updateAppointmentTime', (req, res) => {
         collection.updateOne(
             { _id:ObjectId(ap.id) }, 
             {
-            $set: {  "date" : ap.date , "time" : ap.time  },
+            $set: {  "date" : ap.date,  "time" : ap.time},
             $currentDate: { "lastModified": true }
             },
           (err, result) => {
